@@ -1,0 +1,3 @@
+*.png
+.zig-cache
+zig-out
