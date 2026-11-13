@@ -3,7 +3,6 @@ const File = std.Io.File;
 const Crc32 = std.hash.Crc32;
 
 const Png = @import("png.zig");
-const Chunk = @import("chunk.zig");
 const ChunkType = @import("chunk-type.zig");
 
 const Command = enum { encode, decode, remove, print };
@@ -50,7 +49,7 @@ pub fn main(init: std.process.Init) !void {
                 return;
             };
 
-            var chunk = Chunk{
+            var chunk = Png.Chunk{
                 .chunk_type = ct,
                 .data = try gpa.dupe(u8, @constCast(clean_data)),
                 .length = @intCast(clean_data.len),
