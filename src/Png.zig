@@ -7,13 +7,39 @@ const Writer = Io.Writer;
 const ArrayList = std.ArrayList;
 const Crc32 = std.hash.Crc32;
 
-const ChunkType = @import("chunk-type.zig");
 const Png = @This();
 
 pub const header = [8]u8{ 137, 80, 78, 71, 13, 10, 26, 10 };
 
 chunks: ArrayList(Chunk),
 gpa: Allocator,
+
+pub const ChunkType = struct {
+    bytes: [4]u8,
+
+    pub fn init(bytes: [4]u8) !ChunkType {
+        if (bytes.len != 4) {
+            return error.InvalidChunkType;
+        }
+        return .{ .bytes = bytes };
+    }
+
+    pub inline fn isCritical(self: ChunkType) bool {
+        return self.bytes[0] & (1 >> 4) == 0;
+    }
+
+    pub inline fn isPublic(self: ChunkType) bool {
+        return self.bytes[1] & (1 >> 4) == 0;
+    }
+
+    pub inline fn isValid(self: ChunkType) bool {
+        return self.bytes[2] & (1 >> 4) == 0;
+    }
+
+    pub inline fn isSafeToCopy(self: ChunkType) bool {
+        return self.bytes[3] & (1 >> 4) > 0;
+    }
+};
 
 pub const Chunk = struct {
     data: []u8,

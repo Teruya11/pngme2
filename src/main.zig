@@ -2,8 +2,7 @@ const std = @import("std");
 const File = std.Io.File;
 const Crc32 = std.hash.Crc32;
 
-const Png = @import("png.zig");
-const ChunkType = @import("chunk-type.zig");
+const Png = @import("Png.zig");
 
 const Command = enum { encode, decode, remove, print };
 
@@ -38,7 +37,7 @@ pub fn main(init: std.process.Init) !void {
         .encode => {
             var ct_buff: [4]u8 = undefined;
             @memmove(&ct_buff, chunk_type orelse return error.InvalidChunkType);
-            const ct = try ChunkType.init(ct_buff);
+            const ct = try Png.ChunkType.init(ct_buff);
             if (!ct.isValid()) {
                 try stdout.print("Invalid chunk type: {s}\n", .{ct_buff});
                 return;
@@ -70,7 +69,7 @@ pub fn main(init: std.process.Init) !void {
         .decode => {
             var ct_buff: [4]u8 = undefined;
             @memmove(&ct_buff, chunk_type orelse return error.InvalidChunkType);
-            const ct = try ChunkType.init(ct_buff);
+            const ct = try Png.ChunkType.init(ct_buff);
             if (!ct.isValid()) {
                 try stdout.print("Invalid chunk type: {s}\n", .{ct_buff});
                 return;
